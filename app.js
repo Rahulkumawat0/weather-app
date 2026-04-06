@@ -1,10 +1,51 @@
-// Get API key from window object (injected by Vercel/Netlify environment)
-const API_KEY = window.OPENWEATHER_API_KEY || (typeof CONFIG !== 'undefined' ? CONFIG.API_KEY : '');
+// API Key handling - will be fetched from backend
+let API_KEY = '';
+let apiKeyReady = false;
 
-// Validate API key before making requests
-if (!API_KEY) {
-  console.error('❌ ERROR: API key not configured! Set OPENWEATHER_API_KEY environment variable in deployment settings.');
+// Fetch API key from backend (Vercel Function) or use local config
+async function initializeApiKey() {
+  try {
+    // Try to fetch from Vercel Function first (production)
+    const response = await fetch('/api/config');
+    if (response.ok) {
+      const data = await response.json();
+      API_KEY = data.apiKey;
+      apiKeyReady = true;
+      console.log('✅ API key loaded from server');
+      enableSearchButton();
+      return true;
+    }
+  } catch (error) {
+    console.log('ℹ️ Backend API not available, trying local config...');
+  }
+
+  // Fallback to local config.js (development)
+  if (typeof CONFIG !== 'undefined' && CONFIG.API_KEY) {
+    API_KEY = CONFIG.API_KEY;
+    apiKeyReady = true;
+    console.log('✅ API key loaded from local config');
+    enableSearchButton();
+    return true;
+  }
+
+  // API key not found
+  console.error('❌ ERROR: API key not configured! Set OPENWEATHER_API_KEY environment variable in Vercel settings.');
+  showError('Configuration error: API key not set. Please check server settings.');
+  return false;
 }
+
+// Enable search button and input
+function enableSearchButton() {
+  searchBtn.disabled = false;
+  searchInput.disabled = false;
+  searchInput.placeholder = 'Search city — e.g. Mumbai, Tokyo, London';
+  
+  // Load default weather after API key is ready
+  fetchWeather("New Delhi");
+}
+
+// Initialize API key on page load
+window.addEventListener('DOMContentLoaded', initializeApiKey);
 
 // UI Elements
 const searchInput = document.getElementById("search-input");
@@ -63,6 +104,17 @@ function hideError() {
 async function fetchWeather(city) {
   try {
     hideError();
+
+    // Check if API key is loaded
+    if (!apiKeyReady) {
+      showError('Loading... please wait a moment and try again.');
+      return;
+    }
+
+    if (!API_KEY) {
+      showError('API key not configured. Please check server settings.');
+      return;
+    }
 
     const res = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
@@ -200,5 +252,5 @@ searchInput.addEventListener("keypress", (e) => {
   }
 });
 
-// Default Load
-fetchWeather("New Delhi");
+// Default Load - only after API key is loaded
+// This will be called by enableSearchButton()
