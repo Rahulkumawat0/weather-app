@@ -1,13 +1,9 @@
 {
   "name": "weather-app",
   "version": "1.0.0",
-  "description": "A simple weather dashboard app",
-  "main": "app.js",
-  "scripts": {
-    "build": "echo 'Static site - no build needed'",
-    "start": "python -m http.server 3000 || python -m SimpleHTTPServer 3000"
-  },
-  "keywords": ["weather", "dashboard"],
+  "description": "A simple weather dashboard app - static HTML/CSS/JavaScript",
+  "private": true,
+  "keywords": ["weather", "dashboard", "openweathermap"],
   "author": "Rahulkumawat0",
   "license": "MIT"
 }

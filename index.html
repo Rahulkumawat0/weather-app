@@ -188,6 +188,14 @@
         </div>
       </div>
     </main>
+    
+    <!-- Inject API Key from environment -->
+    <script>
+      // Set up API key from environment variable (for Vercel/Netlify deployment)
+      window.OPENWEATHER_API_KEY = localStorage.getItem('OPENWEATHER_API_KEY') || '';
+    </script>
+    
+    <!-- Load local config (for development only) -->
     <script src="/config.js"></script>
     <script src="/app.js" defer></script>
   </body>

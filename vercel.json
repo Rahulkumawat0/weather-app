@@ -1,15 +1,8 @@
 {
-  "buildCommand": "echo 'Static site - no build needed'",
+  "buildCommand": "",
   "outputDirectory": ".",
   "framework": "static",
   "public": true,
-  "env": [
-    {
-      "key": "OPENWEATHER_API_KEY",
-      "description": "OpenWeatherMap API Key (get free key from https://openweathermap.org/api)",
-      "type": "secret"
-    }
-  ],
   "regions": ["iad1"],
   "git": {
     "deploymentEnabled": {
