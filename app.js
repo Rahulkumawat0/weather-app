@@ -1,4 +1,13 @@
-const API_KEY = CONFIG.API_KEY;
+// Get API key from environment or config (with fallback)
+const API_KEY = 
+  window.location.hostname === 'localhost' 
+    ? CONFIG?.API_KEY || ''
+    : (process.env.OPENWEATHER_API_KEY || CONFIG?.API_KEY || '');
+
+// Validate API key before making requests
+if (!API_KEY) {
+  console.error('❌ ERROR: API key not configured! Configure it in config.js or set OPENWEATHER_API_KEY environment variable.');
+}
 
 // UI Elements
 const searchInput = document.getElementById("search-input");
