@@ -15,10 +15,21 @@
 
 1. On the "Configure Project" page, scroll to **"Environment Variables"** section
 2. Add the following environment variable:
-   - **Key:** `OPENWEATHER_API_KEY`
-   - **Value:** `your_actual_api_key_from_openweathermap`
+   - **Name:** `OPENWEATHER_API_KEY`
+   - **Value:** Your actual OpenWeatherMap API key (get it from https://openweathermap.org/api)
    - **Select environments:** Production, Preview, Development (all checked)
 3. Click **"Add"**
+
+### Important: How the App Uses the Environment Variable
+
+The app now uses a **Vercel Function** (`/api/config.js`) to securely provide the API key:
+
+1. **Frontend** calls `/api/config` when the page loads
+2. **Backend Function** reads `OPENWEATHER_API_KEY` from environment
+3. **API key is returned** safely to the frontend (never exposed in HTML)
+4. **Frontend** uses the key to call OpenWeatherMap API
+
+This is **much more secure** than storing the key in client-side code!
 
 ### Step 3: Deploy
 
@@ -109,6 +120,32 @@
 - Check that `.gitignore` is not excluding needed files
 - Verify deployment uses the correct branch
 
+### "Invalid API key" Error
+
+This error means the backend couldn't find or use the API key. Fix it:
+
+1. **In Vercel Dashboard:**
+   - Go to **Settings → Environment Variables**
+   - Add: `OPENWEATHER_API_KEY` = `your_key_here`
+   - Save and close
+
+2. **Redeploy:**
+   - Go to **Deployments**
+   - Click the 3 dots next to your latest deployment
+   - Select **Redeploy**
+   - Wait for it to complete
+
+3. **Verify your API key:**
+   - Go to [openweathermap.org](https://openweathermap.org)
+   - Sign in
+   - Check your API key is active
+   - Copy it exactly (no spaces)
+
+4. **Test:**
+   - Refresh your deployed app
+   - Try searching for a city
+   - If still failing, check DevTools → Console for error messages
+
 ---
 
 ## ✅ Deployment Checklist
@@ -133,7 +170,37 @@
 
 ---
 
-## 🆘 Need Help?
+## 🔐 Security Architecture
+
+This app uses a **secure backend endpoint** to manage API keys:
+
+### File Structure:
+```
+weather-app/
+├── api/
+│   └── config.js          ← Vercel Function (serverless backend)
+├── app.js                 ← Frontend JavaScript
+├── index.html             ← Frontend HTML
+└── ...
+```
+
+### How It Works:
+
+1. **User visits the app** → HTML loads → `app.js` runs
+2. **`app.js` calls `/api/config`** → Vercel Function responds
+3. **Backend function** reads `OPENWEATHER_API_KEY` from environment
+4. **API key is sent** to frontend (it's already on Vercel's servers)
+5. **Frontend** uses key to fetch weather data from OpenWeatherMap
+
+### Benefits:
+
+✅ API key is **never exposed** in HTML/CSS/JS files  
+✅ API key is **never committed** to Git  
+✅ API key is **secure** on Vercel's servers  
+✅ Only **one copy** of the key (no duplicates)  
+✅ **Easy to rotate** - just update environment variable  
+
+---
 
 - **Vercel Docs:** https://vercel.com/docs
 - **Netlify Docs:** https://docs.netlify.com
