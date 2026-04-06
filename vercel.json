@@ -1,7 +1,6 @@
 {
   "buildCommand": "",
   "outputDirectory": ".",
-  "framework": "static",
   "public": true,
   "regions": ["iad1"],
   "git": {
